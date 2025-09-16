@@ -241,7 +241,7 @@ export default function FeedPage() {
             {/* AI Prompt + Events side by side */}
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 3 }}>
                 {/* AI Prompt */}
-                <Box
+                <Card
                     sx={{
                         borderRadius: 2,
                         p: 2,
@@ -254,7 +254,7 @@ export default function FeedPage() {
                     <Typography variant="body2" color="text.secondary">
                         “Film 3 shots that show how your day starts — morning light, your face, your first move.”
                     </Typography>
-                </Box>
+                </Card>
 
                 {/* Events */}
                 <Card
@@ -269,7 +269,7 @@ export default function FeedPage() {
                                 ? "0 8px 24px rgba(0,0,0,0.6)"
                                 : "0 4px 12px rgba(0,0,0,0.12)",
                         color: theme.palette.mode === "dark" ? "#fff" : "inherit",
-                        mb: 3,
+
                     })}
                 >
                     <CardContent>
@@ -277,7 +277,7 @@ export default function FeedPage() {
                             📅 Upcoming Events
                         </Typography>
                         {events.map((e, i) => (
-                            <Box key={i} sx={{ mb: 2 }}>
+                            <Box key={i} >
                                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                                     {e.name}
                                 </Typography>
