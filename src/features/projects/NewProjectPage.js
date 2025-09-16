@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    Container,
     Typography,
     Grid,
     Card,
@@ -16,7 +15,7 @@ export default function NewProjectPage() {
     const navigate = useNavigate();
 
     return (
-        <Container maxWidth="md" sx={{ mt: 2, mb: 4 }}>
+        <Box maxWidth="md" sx={{ mt: 1, mb: 4 }}>
             {/* Заголовок + кнопка назад */}
             <Box
                 sx={{
@@ -25,7 +24,7 @@ export default function NewProjectPage() {
                     mb: 3,
                 }}
             >
-                <IconButton onClick={() => navigate(-1)} sx={{ mr: 1 }}>
+                <IconButton size={'small'} onClick={() => navigate(-1)} sx={{ mr: 1 }}>
                     <ArrowBack />
                 </IconButton>
                 <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -105,6 +104,6 @@ export default function NewProjectPage() {
                     </Grid>
                 ))}
             </Grid>
-        </Container>
+        </Box>
     );
 }

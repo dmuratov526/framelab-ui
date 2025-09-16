@@ -9,6 +9,9 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useNavigate } from "react-router-dom";
+import {createProject} from "../project-page/projectFactory";
+import {generateRandomScenes} from "../project-page/generators";
 
 const renderOptions = (options, key) => (formData, setFormData) => (
     <Box
@@ -73,6 +76,8 @@ const renderOptions = (options, key) => (formData, setFormData) => (
 );
 
 export default function ThemeWizardPage() {
+    const navigate = useNavigate();
+
     const steps = [
         {
             title: "Choose a Theme",
@@ -147,12 +152,20 @@ export default function ThemeWizardPage() {
                     />
                 </LocalizationProvider>
             ),
-            validate: () => true, // дата не обязательна
+            validate: () => true,
         },
     ];
 
     const handleFinish = (data) => {
-        alert("Theme Project:\n" + JSON.stringify(data, null, 2));
+        const projectData = createProject("theme", {
+            title: `${data.theme || "Untitled"} Project`,
+            duration: data.duration || "30s",
+            scenes: generateRandomScenes("theme"), // можно доработать под duration
+            musicSelected: !!data.music,
+            notes: `${data.mood || ""} ${data.participants || ""} ${data.location || ""} ${data.style || ""}`,
+        });
+
+        navigate("/project", { state: { projectData } });
     };
 
     return (

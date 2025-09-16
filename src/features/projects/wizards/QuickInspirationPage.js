@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-    Container,
     Typography,
     Card,
     CardContent,
@@ -13,64 +12,108 @@ import {
 } from "@mui/material";
 import { Refresh, ArrowBack, BookmarkBorder } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import {createProject} from "../project-page/projectFactory";
+
+const ideasList = [
+    {
+        title: "Morning Coffee ☕",
+        desc: "Show your morning vibe in 3 quick shots: making coffee, first sip, and your smile.",
+        music: "Chill Vibes Track",
+        duration: "15s",
+        tags: ["morning", "coffee", "lifestyle"],
+        difficulty: "Easy",
+        shots: 3,
+        tip: "Best filmed in portrait mode near a window with natural light.",
+    },
+    {
+        title: "City Walk 🚶‍♂️",
+        desc: "Film your walk: shoes, the street, and a landmark.",
+        music: "Urban Beat",
+        duration: "20s",
+        tags: ["city", "walk", "travel"],
+        difficulty: "Easy",
+        shots: 3,
+        tip: "Capture moving details: footsteps, flowing traffic, wide street shots.",
+    },
+    {
+        title: "Dance Break 💃",
+        desc: "Try 5 seconds of your favorite dance move.",
+        music: "Trending TikTok Track",
+        duration: "10s",
+        tags: ["dance", "fun", "trend"],
+        difficulty: "Medium",
+        shots: 1,
+        tip: "Place camera on a steady surface — full body in frame works best.",
+    },
+    {
+        title: "Cooking Fun 🍳",
+        desc: "Ingredients, sizzling pan, and the final dish.",
+        music: "Upbeat Acoustic",
+        duration: "30s",
+        tags: ["cooking", "food", "home"],
+        difficulty: "Easy",
+        shots: 3,
+        tip: "Film close-ups of ingredients for texture.",
+    },
+];
+
+// 🔹 Вспомогательная функция для перевода "15s" / "1m"
+const parseDuration = (dur) => {
+    if (dur.endsWith("s")) return parseInt(dur);
+    if (dur.endsWith("m")) return parseInt(dur) * 60;
+    return 30;
+};
+
+// 🔹 Генерация сцен строго по идее
+const generateScenesFromIdea = (idea) => {
+    const total = parseDuration(idea.duration);
+    const baseDur = Math.floor(total / idea.shots);
+    let remaining = total;
+
+    const scenes = [];
+    for (let i = 0; i < idea.shots; i++) {
+        let dur = i === idea.shots - 1 ? remaining : baseDur;
+        remaining -= dur;
+
+        scenes.push({
+            id: `${Date.now()}-${i}`,
+            title: `Shot ${i + 1}`,
+            duration: dur,
+            description: `${idea.title} scene`,
+            completed: false,
+        });
+    }
+    return scenes;
+};
 
 export default function QuickInspirationPage() {
     const navigate = useNavigate();
+    const [current, setCurrent] = useState(
+        Math.floor(Math.random() * ideasList.length)
+    );
 
-    const ideas = [
-        {
-            title: "Morning Coffee ☕",
-            desc: "Show your morning vibe in 3 quick shots: making coffee, first sip, and your smile.",
-            preview: "https://picsum.photos/800/400?random=22",
-            music: "Chill Vibes Track",
-            duration: "15s",
-            tags: ["morning", "coffee", "lifestyle"],
-            difficulty: "Easy",
-            shots: 3,
-            usedBy: 245,
-            tip: "Best filmed in portrait mode near a window with natural light.",
-        },
-        {
-            title: "City Walk 🚶‍♂️",
-            desc: "Film your walk: shoes, the street, and a landmark.",
-            preview: "https://picsum.photos/800/400?random=23",
-            music: "Urban Beat",
-            duration: "20s",
-            tags: ["city", "walk", "travel"],
-            difficulty: "Easy",
-            shots: 3,
-            usedBy: 367,
-            tip: "Capture moving details: footsteps, flowing traffic, wide street shots.",
-        },
-        {
-            title: "Dance Break 💃",
-            desc: "Try 5 seconds of your favorite dance move.",
-            preview: "https://picsum.photos/800/400?random=24",
-            music: "Trending TikTok Track",
-            duration: "10s",
-            tags: ["dance", "fun", "trend"],
-            difficulty: "Medium",
-            shots: 1,
-            usedBy: 589,
-            tip: "Place camera on a steady surface — full body in frame works best.",
-        },
-    ];
-
-    const [current, setCurrent] = useState(0);
+    const inspiration = ideasList[current];
+    const previewUrl = `https://picsum.photos/800/400?random=${current + 100}`;
 
     const handleRecord = () => {
-        alert("🎥 Open Camera Flow (to be implemented)");
+        const projectData = createProject("quick", {
+            title: inspiration.title,
+            duration: inspiration.duration,
+            scenes: generateScenesFromIdea(inspiration),
+            musicSelected: true,
+            music: inspiration.music,
+            notes: inspiration.tip,
+        });
+        navigate("/project", { state: { projectData } });
     };
 
     const handleRefresh = () => {
-        setCurrent((prev) => (prev + 1) % ideas.length);
+        setCurrent(Math.floor(Math.random() * ideasList.length));
     };
 
-    const inspiration = ideas[current];
-
     return (
-        <Container maxWidth="md" sx={{ mt: 2, mb: 4 }}>
-            {/* Header with back + refresh */}
+        <Box maxWidth="md" sx={{ mt: 1, mb: 4 }}>
+            {/* Header */}
             <Box
                 sx={{
                     display: "flex",
@@ -79,32 +122,33 @@ export default function QuickInspirationPage() {
                     mb: 2,
                 }}
             >
-                <IconButton onClick={() => navigate(-1)}>
+                <IconButton size="small" onClick={() => navigate(-1)}>
                     <ArrowBack />
                 </IconButton>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                     Quick Inspiration
                 </Typography>
-                <IconButton onClick={handleRefresh}>
+                <IconButton size="small" onClick={handleRefresh}>
                     <Refresh />
                 </IconButton>
             </Box>
 
             <Card
                 sx={{
-                    borderRadius: 4,
+                    borderRadius: 2,
                     overflow: "hidden",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
-                    background: "linear-gradient(180deg, rgba(40,50,70,0.9) 0%, rgba(20,25,35,0.95) 100%)",
+                    background:
+                        "linear-gradient(180deg, rgba(40,50,70,0.9) 0%, rgba(20,25,35,0.95) 100%)",
                     color: "white",
                 }}
             >
-                {/* Картинка с градиентным overlay */}
+                {/* Preview */}
                 <Box sx={{ position: "relative" }}>
                     <CardMedia
                         component="img"
                         height="220"
-                        image={inspiration.preview}
+                        image={previewUrl}
                         alt={inspiration.title}
                         sx={{ objectFit: "cover" }}
                     />
@@ -194,13 +238,6 @@ export default function QuickInspirationPage() {
                         💡 {inspiration.tip}
                     </Typography>
 
-                    <Typography
-                        variant="caption"
-                        sx={{ display: "block", mb: 2, color: "rgba(255,255,255,0.8)" }}
-                    >
-                        👥 {inspiration.usedBy} creators already tried this
-                    </Typography>
-
                     <Button
                         variant="contained"
                         fullWidth
@@ -223,7 +260,6 @@ export default function QuickInspirationPage() {
                     </Button>
                 </CardContent>
             </Card>
-
-        </Container>
+        </Box>
     );
 }

@@ -1,117 +1,307 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
-    Container,
-    Typography,
     Box,
-    Tabs,
-    Tab,
+    Typography,
     LinearProgress,
     IconButton,
-    Paper,
+    Tabs,
+    Tab,
+    Card,
+    CardContent
 } from "@mui/material";
-import { Share } from "@mui/icons-material";
+import ShareIcon from "@mui/icons-material/Share";
+import { projectTabsConfig } from "./projectTabsConfig";
+import { createProject } from "./projectFactory";
+import DurationCard from "./DurationCard";
 import ScenesTab from "../tabs/ScenesTab";
+import {generateRandomScene, generateRandomScenes} from "./generators";
+import MusicTab from "../tabs/MusicTab";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
 
 
-function MusicTab() {
-    return <Typography>🎵 Music (waveform, align to beats)</Typography>;
-}
-function MediaTab() {
-    return <Typography>📂 Media (uploads, references)</Typography>;
-}
-function NarrationTab() {
-    return <Typography>🎙️ Narration (voiceover, TTS)</Typography>;
-}
-function CollabTab() {
-    return <Typography>👥 Collaboration (chat, comments)</Typography>;
-}
-function PreviewTab() {
-    return <Typography>▶️ Preview (rough cut, export)</Typography>;
-}
+
+
+//
+// const projectTypes = Object.keys(projectTabsConfig);
 
 export default function ProjectView() {
-    const [tab, setTab] = useState(0);
+    const location = useLocation();
+    const incomingProject = location.state?.projectData;
+    const [currentProject, setCurrentProject] = useState(
+        incomingProject ||
+        createProject("theme", {
+            title: "Default Project",
+            duration: "30s",
+            scenes: generateRandomScenes("theme"),
+            musicSelected: false,
+            notes: "",
+        })
+    );
 
-    const handleChange = (event, newValue) => {
-        setTab(newValue);
+    const [progress, setProgress] = useState(0);
+
+    function calculateProgress(project) {
+        let totalSteps = project.scenes.length + 1; // сцены + музыка
+        let done = project.scenes.filter(s => s.completed).length;
+        if (project.musicSelected) done += 1;
+        return totalSteps === 0 ? 0 : Math.round((done / totalSteps) * 100);
+    }
+    console.log(incomingProject.music)
+
+    useEffect(() => {
+        setProgress(calculateProgress(currentProject));
+    }, [currentProject]);
+
+    const config = projectTabsConfig[currentProject.type] || { tabs: [] };
+    const currentTabs = config.tabs || [];
+    const [tabIndex, setTabIndex] = useState(0);
+
+    // // выбор случайного типа
+    // const getRandomType = () =>
+    //     projectTypes[Math.floor(Math.random() * projectTypes.length)];
+
+    // // смена типа вручную
+    // const handleTypeChange = (e) => {
+    //     const newType = e.target.value;
+    //     setCurrentProject(
+    //         createProject(newType, {
+    //             title: `New ${newType} Project`,
+    //             duration: `${20 + Math.floor(Math.random() * 40)}s`,
+    //             scenes: generateRandomScenes(newType),
+    //         })
+    //     );
+    //     setTabIndex(0);
+    // };
+    //
+    // // регенерация (полностью новый объект)
+    // const handleRegenerate = () => {
+    //     const newType = getRandomType();
+    //     const newDuration = 20 + Math.floor(Math.random() * 40);
+    //
+    //     setCurrentProject(
+    //         createProject(newType, {
+    //             title: `Auto ${newType} Project`,
+    //             duration: `${newDuration}s`,
+    //             scenes: generateScenesMatchingTotal(newType, newDuration),
+    //         })
+    //     );
+    //     setTabIndex(0);
+    // };
+
+    const handleRegenerateOnlyScenes = () => {
+        setCurrentProject((prev) => ({
+            ...prev,
+            scenes: generateScenesMatchingTotal(prev.type, parseInt(prev.duration)),
+        }));
     };
 
-    const project = {
-        title: "My Travel Story",
-        progress: 40, // % от готовности
+    // добавить сцену
+    const handleAddScene = () => {
+        setCurrentProject((prev) => ({
+            ...prev,
+            scenes: [
+                ...(prev.scenes || []),
+                generateRandomScene(prev.scenes?.length || 0, prev.type),
+            ],
+        }));
     };
+
+    // удалить сцену
+    const handleDeleteScene = (id) => {
+        setCurrentProject((prev) => ({
+            ...prev,
+            scenes: prev.scenes.filter((s) => s.id !== id),
+        }));
+    };
+
+    function generateScenesMatchingTotal(type, total) {
+        const numScenes = 2 + Math.floor(Math.random() * 5); // от 2 до 6 сцен
+        let remaining = total;
+        const scenes = [];
+
+        for (let i = 0; i < numScenes; i++) {
+            let dur;
+            if (i === numScenes - 1) {
+                dur = remaining; // последняя сцена добивает остаток
+            } else {
+                dur = Math.max(1, Math.floor(remaining * (0.1 + Math.random() * 0.3)));
+            }
+            remaining -= dur;
+
+            scenes.push({
+                id: `${Date.now()}-${i}`,
+                title: `Scene ${i + 1}`,
+                duration: dur,
+                description: `${type} scene`,
+                completed: false
+            });
+        }
+
+        return scenes;
+    }
+
+    const handleRegenerateScenes = (newDuration) => {
+        setCurrentProject((prev) =>
+            createProject(prev.type, {
+                title: prev.title,
+                duration: `${newDuration}s`,
+                scenes: generateScenesMatchingTotal(prev.type, newDuration),
+            })
+        );
+    };
+
+    const handleToggleSceneComplete = (id) => {
+        setCurrentProject((prev) => ({
+            ...prev,
+            scenes: prev.scenes.map((s) =>
+                s.id === id ? { ...s, completed: !s.completed } : s
+            ),
+        }));
+    };
+
+    const handleToggleMusic = () => {
+        setCurrentProject(prev => ({
+            ...prev,
+            musicSelected: !prev.musicSelected
+        }));
+    };
+
+    const navigate = useNavigate();
+
 
     return (
-        <Container maxWidth="md" sx={{ mt: 2, mb: 6, p: 0 }}>
-            {/* Заголовок + прогресс */}
+        <Box maxWidth="md" sx={{ mt: 1, mb: 4 }}>
+            {/* Заголовок */}
             <Box
                 sx={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
+                    justifyContent: "space-between",
                     mb: 2,
                 }}
             >
-                <Box>
+                <Box display={'flex'} alignItems={'center'}>
+                    <IconButton size="small" onClick={() => navigate(-1)}>
+                        <ArrowBack />
+                    </IconButton>
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        {project.title}
+                        {currentProject.title}
+                    </Typography>
+                </Box>
+                <Box>
+                    {/*<IconButton onClick={handleRegenerate}>*/}
+                    {/*    <AutorenewIcon />*/}
+                    {/*</IconButton>*/}
+                    <IconButton>
+                        <ShareIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+
+            {/*/!* Панель выбора типа проекта (для тестов) *!/*/}
+            {/*<Box sx={{ display: "flex", gap: 2, mb: 3, alignItems: "center" }}>*/}
+            {/*    <Select*/}
+            {/*        value={currentProject.type}*/}
+            {/*        onChange={handleTypeChange}*/}
+            {/*        size="small"*/}
+            {/*    >*/}
+            {/*        {projectTypes.map((key) => (*/}
+            {/*            <MenuItem key={key} value={key}>*/}
+            {/*                {projectTabsConfig[key].label}*/}
+            {/*            </MenuItem>*/}
+            {/*        ))}*/}
+            {/*    </Select>*/}
+            {/*</Box>*/}
+
+            {/* Прогресс */}
+            <Card
+                sx={(theme) => ({
+                    borderRadius: 2,
+                    mb: 3,
+                    background:
+                        theme.palette.mode === "dark"
+                            ? "linear-gradient(135deg, #121212 0%, #1e1e2e 50%, #0f0f17 100%)"
+                            : "linear-gradient(135deg, #f8f9fb 0%, #eef1f7 50%, #ffffff 100%)",
+                })}
+            >
+                <CardContent>
+                    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+                        Progress
                     </Typography>
                     <LinearProgress
                         variant="determinate"
-                        value={project.progress}
-                        sx={{
-                            height: 8,
-                            borderRadius: 5,
-                            mt: 1,
-                            maxWidth: 240,
-                        }}
+                        value={progress}
+                        sx={{ height: 8, borderRadius: 5, mb: 1 }}
                         color="primary"
                     />
-                </Box>
-                <IconButton color="primary">
-                    <Share />
-                </IconButton>
-            </Box>
+                    <Typography variant="caption" color="text.secondary">
+                        {progress}% complete
+                    </Typography>
+                </CardContent>
+            </Card>
 
-            {/* Табы */}
-            <Paper
+            {/* Общая длительность */}
+            <DurationCard
+                type={currentProject.type}
+                duration={currentProject.duration}
+                onRegenerate={handleRegenerateScenes}
+            />
+
+
+            {/* Tabs */}
+            <Tabs
+                value={tabIndex}
+                onChange={(_, v) => setTabIndex(v)}
+                variant="scrollable"
+                scrollButtons="auto"
                 sx={{
-                    borderRadius: 2,
                     mb: 2,
-                    backdropFilter: "blur(16px) saturate(180%)",
-                    WebkitBackdropFilter: "blur(16px) saturate(180%)",
-                    backgroundColor: "rgba(255,255,255,0.05)",
+                    borderRadius: 2,
+                    background:
+                        "linear-gradient(135deg, rgba(103,58,183,0.08), rgba(33,150,243,0.05))",
                 }}
             >
-                <Tabs
-                    value={tab}
-                    onChange={handleChange}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    textColor="primary"
-                    indicatorColor="primary"
-                    sx={{
-                        "& .MuiTab-root": { fontWeight: 600, minWidth: 100 },
-                    }}
-                >
-                    <Tab label="Scenes" />
-                    <Tab label="Music" />
-                    <Tab label="Media" />
-                    <Tab label="Narration" />
-                    <Tab label="Collab" />
-                    <Tab label="Preview" />
-                </Tabs>
-            </Paper>
+                {currentTabs.map((tab, idx) => (
+                    <Tab key={idx} label={tab} />
+                ))}
+            </Tabs>
 
-            {/* Контент активной вкладки */}
-            <Box sx={{ mt: 2 }}>
-                {tab === 0 && <ScenesTab />}
-                {tab === 1 && <MusicTab />}
-                {tab === 2 && <MediaTab />}
-                {tab === 3 && <NarrationTab />}
-                {tab === 4 && <CollabTab />}
-                {tab === 5 && <PreviewTab />}
-            </Box>
-        </Container>
+            {/* Контент вкладки */}
+            <Card
+                sx={(theme) => ({
+                    borderRadius: 2,
+                    p: 2,
+                    minHeight: 220,
+                    background:
+                        theme.palette.mode === "dark"
+                            ? "linear-gradient(135deg, #1a1a1a, #222 50%, #111)"
+                            : "linear-gradient(135deg, #fafbff, #f0f3fa 50%, #ffffff)",
+                })}
+            >
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Content for <b>{currentTabs[tabIndex]}</b> tab (type:{" "}
+                    {currentProject.type})
+                </Typography>
+
+                {currentTabs[tabIndex] === "Scenes" && (
+                    <ScenesTab
+                        scenes={currentProject.scenes}
+                        onAddScene={handleAddScene}
+                        onDeleteScene={handleDeleteScene}
+                        onRegenerateScenes={handleRegenerateOnlyScenes}
+                        onToggleComplete={handleToggleSceneComplete} // 🟢
+                    />
+                )}
+
+                {currentTabs[tabIndex] === "Music" && (
+                    <MusicTab
+                        music={currentProject.music}
+                        musicSelected={currentProject.musicSelected}
+                        onToggleMusic={handleToggleMusic}
+                    />
+                )}
+            </Card>
+        </Box>
     );
 }

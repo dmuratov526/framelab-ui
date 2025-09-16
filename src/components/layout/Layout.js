@@ -54,30 +54,30 @@ export default function Layout({ children }) {
                         </Typography>
                     </Box>
 
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        {/* Переключатель темы */}
-                        <IconButton
-                            color="primary"
-                            onClick={() => dispatch(toggleTheme())}
-                            sx={{ transition: "color 0.4s ease" }}
-                        >
-                            {themeMode === "light" ? <DarkMode /> : <LightMode />}
-                        </IconButton>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            {/* Переключатель темы */}
+                            <IconButton
+                                color="primary"
+                                onClick={() => dispatch(toggleTheme())}
+                                sx={{ transition: "color 0.4s ease" }}
+                            >
+                                {themeMode === "light" ? <DarkMode /> : <LightMode />}
+                            </IconButton>
 
-                        {/* Профиль */}
-                        <IconButton onClick={() => navigate("/profile")}>
-                            <Avatar
-                                src="https://i.pravatar.cc/100?img=12"
-                                sx={{
-                                    width: 32,
-                                    height: 32,
-                                    transition: "border 0.3s ease",
-                                    "&:hover": { border: "2px solid", borderColor: "primary.main" },
-                                }}
-                            />
-                        </IconButton>
-                    </Box>
-                </Toolbar>
+                            {/* Профиль */}
+                            <IconButton onClick={() => navigate("/profile")}>
+                                <Avatar
+                                    src="https://i.pravatar.cc/100?img=12"
+                                    sx={{
+                                        width: 32,
+                                        height: 32,
+                                        transition: "border 0.3s ease",
+                                        "&:hover": { border: "2px solid", borderColor: "primary.main" },
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
+                    </Toolbar>
             </AppBar>
 
             {/* Контент */}

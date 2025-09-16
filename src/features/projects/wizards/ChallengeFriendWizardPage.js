@@ -17,6 +17,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+import {createProject} from "../project-page/projectFactory";
+import {generateRandomScenes} from "../project-page/generators";
 
 const renderDurations = (options, key) => (formData, setFormData) => (
     <Box
@@ -64,6 +67,8 @@ const renderDurations = (options, key) => (formData, setFormData) => (
 );
 
 export default function ChallengeFriendWizardPage() {
+    const navigate = useNavigate();
+
     const friends = [
         { id: 1, name: "Liam Smith", avatar: "https://i.pravatar.cc/150?img=11" },
         { id: 2, name: "Sophia Lee", avatar: "https://i.pravatar.cc/150?img=22" },
@@ -160,7 +165,17 @@ export default function ChallengeFriendWizardPage() {
     ];
 
     const handleFinish = (data) => {
-        alert("Challenge Sent:\n" + JSON.stringify(data, null, 2));
+        const projectData = createProject("friendChallenge", {
+            title: `Challenge: ${data.theme}`,
+            duration: data.duration || "30s",
+            scenes: generateRandomScenes("friendChallenge"),
+            musicSelected: false,
+            notes: `Deadline: ${
+                data.deadline ? dayjs(data.deadline).format("YYYY-MM-DD") : "No deadline"
+            }, Friend: ${data.friend?.name || "Not selected"}`,
+        });
+
+        navigate("/project", { state: { projectData } });
     };
 
     return (

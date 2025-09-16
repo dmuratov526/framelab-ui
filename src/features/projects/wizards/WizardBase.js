@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import {ArrowBack, ArrowBackIos, ArrowForwardIos} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import {generateRandomScenes} from "../project-page/generators";
+import {createProject} from "../project-page/projectFactory";
 
-export default function WizardBase({ title, description, steps, onFinish }) {
+export default function WizardBase({ title, description, steps }) {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState({});
     const navigate = useNavigate();
@@ -22,7 +24,16 @@ export default function WizardBase({ title, description, steps, onFinish }) {
         if (step < stepsTotal - 1) {
             setStep(step + 1);
         } else {
-            onFinish(formData);
+            // когда последний шаг
+            const newProject = createProject("theme", {
+                title: formData.theme || "My New Project",
+                duration: formData.duration || "30s",
+                scenes: generateRandomScenes("theme"),
+                musicSelected: !!formData.music,
+                notes: "",
+            });
+
+            navigate("/project", { state: { projectData: newProject } });
         }
     };
 
@@ -35,14 +46,14 @@ export default function WizardBase({ title, description, steps, onFinish }) {
     const currentStep = steps[step];
 
     return (
-        <Container maxWidth="md" sx={{ mt: 2, mb: 4, p: 0 }}>
+        <Container maxWidth="md" sx={{ mt: 1, mb: 4, p: 0 }}>
             {/* Кнопка назад к категориям */}
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <IconButton onClick={() => navigate(-1)}>
+                <IconButton size={'small'} onClick={() => navigate(-1)}>
                     <ArrowBack />
                 </IconButton>
                 <Typography variant="h6" sx={{ fontWeight: 600, ml: 1 }}>
-                    Back
+                    Project Setup
                 </Typography>
             </Box>
 

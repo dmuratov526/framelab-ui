@@ -46,7 +46,7 @@ export default function FeedPage() {
     return (
         <Container maxWidth="md" sx={{ mt: 1, p: 0, pb: 3 }}>
             {/* Заголовок */}
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography variant="h5" sx={{ mb: 2 }}>
                 Explore Feed
             </Typography>
 

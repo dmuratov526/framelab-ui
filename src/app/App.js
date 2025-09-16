@@ -43,7 +43,7 @@ export default function App() {
                     {/*<Route path="/wizard/music" element={<MusicWizardPage />} />*/}
                     {/*<Route path="/wizard/custom" element={<CustomWizardPage />} />*/}
                     {/*<Route path="/wizard/challenge-system" element={<ChallengeSystemWizardPage />} />*/}
-                    <Route path="/projects/:projectId" element={<ProjectView />} />
+                    <Route path="/project" element={<ProjectView />} />
                     <Route path="/projects/:projectId/scenes/:sceneId" element={<Box>Scene Processing</Box>} />
                 </Routes>
             </Layout>
