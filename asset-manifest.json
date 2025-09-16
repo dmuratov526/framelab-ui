@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/framelab-ui/static/css/main.185337c7.css",
+    "main.js": "/framelab-ui/static/js/main.20e4faf1.js",
+    "index.html": "/framelab-ui/index.html",
+    "main.185337c7.css.map": "/framelab-ui/static/css/main.185337c7.css.map",
+    "main.20e4faf1.js.map": "/framelab-ui/static/js/main.20e4faf1.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.185337c7.css",
+    "static/js/main.20e4faf1.js"
+  ]
+}
