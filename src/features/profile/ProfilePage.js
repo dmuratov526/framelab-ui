@@ -36,7 +36,7 @@ export default function ProfilePage() {
     return (
         <Container maxWidth={'md'} sx={{ p:0 }}>
             {/* Верхняя часть: аватар + имя */}
-            <Stack alignItems="center" mt={1} spacing={2}>
+            <Stack alignItems="center" mt={2} spacing={2}>
                 <Avatar src={user.avatar} sx={{ width: 96, height: 96 }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                     {user.name}
@@ -56,7 +56,7 @@ export default function ProfilePage() {
                     variant="contained"
                     color="primary"
                     size="small"
-                    sx={{ borderRadius: 3, textTransform: "none", px: 3 }}
+                    sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
                 >
                     Edit Profile
                 </Button>
@@ -64,29 +64,45 @@ export default function ProfilePage() {
 
             {/* Статистика */}
             <Card
-                sx={{
+                sx={(theme) => ({
                     mt: 3,
-                    borderRadius: 2,   // <-- вместо 3
-                    bgcolor: "background.paper",
-                    boxShadow: "none",
-                }}
+                    borderRadius: 2,
+                    background:
+                        theme.palette.mode === "dark"
+                            ? "linear-gradient(135deg, rgba(30,30,40,0.9), rgba(20,20,30,0.95))"
+                            : "linear-gradient(135deg, rgba(250,250,255,1), rgba(240,240,250,1))",
+                    boxShadow:
+                        theme.palette.mode === "dark"
+                            ? "0 2px 10px rgba(0,0,0,0.4)"
+                            : "0 2px 6px rgba(0,0,0,0.08)",
+                })}
             >
                 <CardContent>
-                    <Stack direction="row" justifyContent="space-around" textAlign="center">
+                    <Stack
+                        direction="row"
+                        justifyContent="space-around"
+                        textAlign="center"
+                    >
                         <Box>
-                            <Typography variant="h6">{user.projects}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                {user.projects}
+                            </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Projects
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography variant="h6">{user.followers}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                {user.followers}
+                            </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Followers
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography variant="h6">{user.following}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                {user.following}
+                            </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Following
                             </Typography>
@@ -95,14 +111,21 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
+
             {/* Настройки */}
             <Card
-                sx={{
+                sx={(theme) => ({
                     mt: 3,
-                    borderRadius: 2,   // <-- вместо 3
-                    bgcolor: "background.paper",
-                    boxShadow: "none",
-                }}
+                    borderRadius: 2,
+                    background:
+                        theme.palette.mode === "dark"
+                            ? "linear-gradient(180deg, rgba(25,25,35,0.95) 0%, rgba(15,15,25,0.98) 100%)"
+                            : "linear-gradient(180deg, #ffffff 0%, #f9f9fb 100%)",
+                    boxShadow:
+                        theme.palette.mode === "dark"
+                            ? "0 4px 16px rgba(0,0,0,0.5)"
+                            : "0 2px 8px rgba(0,0,0,0.08)",
+                })}
             >
                 <List>
                     <ListItem disablePadding>
@@ -159,6 +182,7 @@ export default function ProfilePage() {
                     </ListItem>
                 </List>
             </Card>
+
         </Container>
     );
 }

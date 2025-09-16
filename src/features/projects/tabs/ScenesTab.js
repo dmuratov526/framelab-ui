@@ -120,7 +120,7 @@ export default function ScenesTab() {
                                             <Card
                                                 sx={{
                                                     width: "100%",
-                                                    borderRadius: 3,
+                                                    borderRadius: 2,
                                                     height: 180,
                                                     display: "flex",
                                                     flexDirection: "column",
@@ -222,7 +222,7 @@ export default function ScenesTab() {
                                 <Card
                                     onClick={handleAddScene}
                                     sx={{
-                                        borderRadius: 3,
+                                        borderRadius: 2,
                                         height: 180,
                                         display: "flex",
                                         alignItems: "center",

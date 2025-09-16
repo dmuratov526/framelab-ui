@@ -6,99 +6,66 @@ import {
     Card,
     CardActionArea,
     Box,
+    IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-// Иконки MUI
-import MovieIcon from "@mui/icons-material/Movie";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import NoteAddIcon from "@mui/icons-material/NoteAdd";
-import BoltIcon from "@mui/icons-material/Bolt";
-import PeopleIcon from "@mui/icons-material/People";
-import LightbulbIcon from "@mui/icons-material/Lightbulb";
-
+import { ArrowBack } from "@mui/icons-material";
+import { newProjectCategories } from "./newProjectCategories";
 
 export default function NewProjectPage() {
     const navigate = useNavigate();
 
-    const categories = [
-        {
-            id: "quick-inspiration",
-            title: "Quick Inspiration",
-            desc: "One-tap ideas — shoot fast, get instant videos with music.",
-            icon: <LightbulbIcon  sx={{ fontSize: 36 }} />,
-            blocked: false
-        },
-        {
-            id: "genre",
-            title: "Theme",
-            desc: "Pick a theme and mood for your video",
-            icon: <MovieIcon sx={{ fontSize: 36 }} />,
-            blocked: false
-        },
-        {
-            id: "challenge-friend",
-            title: "Friend Challenge",
-            desc: "Send a custom challenge to your friend.",
-            icon: <PeopleIcon sx={{ fontSize: 36 }} />,
-            blocked: false
-        },
-        {
-            id: "music",
-            title: "Start from Music",
-            desc: "Choose a track and AI will suggest scenes by rhythm.",
-            icon: <MusicNoteIcon sx={{ fontSize: 36 }} />,
-            blocked: true
-        },
-        {
-            id: "custom",
-            title: "Start Empty",
-            desc: "Blank project. Build scenes and structure manually.",
-            icon: <NoteAddIcon sx={{ fontSize: 36 }} />,
-            blocked: true
-        },
-        {
-            id: "challenge-system",
-            title: "Challenge of the Day",
-            desc: "Take on daily/weekly challenge from the app.",
-            icon: <BoltIcon sx={{ fontSize: 36 }} />,
-            blocked: true
-        }
-    ];
-
     return (
         <Container maxWidth="md" sx={{ mt: 2, mb: 4 }}>
-            <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-                Create New Project
-            </Typography>
+            {/* Заголовок + кнопка назад */}
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    mb: 3,
+                }}
+            >
+                <IconButton onClick={() => navigate(-1)} sx={{ mr: 1 }}>
+                    <ArrowBack />
+                </IconButton>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    Create New Project
+                </Typography>
+            </Box>
 
-            <Grid container spacing={3}>
-                {categories.map((c) => (
-                    <Grid item xs={12} sm={6} key={c.id}>
+            <Grid container justifyContent={'center'} spacing={3}>
+                {newProjectCategories.map((c) => (
+                    <Grid width={ { xs: '100%', md: 'inherit' } } item xs={12} sm={6} key={c.id} justifyContent={'center'}>
                         <Card
-                            sx={{
-                                opacity: c.blocked ? 0.5 : 1,
-                                borderRadius: 3,
+                            sx={(theme) => ({
+                                opacity: c.blocked ? 0.6 : 1,
+                                borderRadius: 2,
                                 height: 160,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                background: c.blocked ? 'rgba(0, 0, 0, 0.6)' :
-                                    "linear-gradient(135deg, rgba(103,58,183,0.15), rgba(103,58,183,0.05))",
+                                background: c.blocked
+                                    ? theme.palette.mode === "dark"
+                                        ? "linear-gradient(135deg, rgba(30,30,30,0.9), rgba(20,20,20,0.85))"
+                                        : "linear-gradient(135deg, rgba(230,230,230,0.9), rgba(245,245,245,0.85))"
+                                    : "linear-gradient(135deg, rgba(103,58,183,0.15), rgba(103,58,183,0.05))",
                                 backdropFilter: "blur(16px) saturate(180%)",
                                 WebkitBackdropFilter: "blur(16px) saturate(180%)",
                                 color: "text.primary",
-                                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                                boxShadow: c.blocked
+                                    ? "inset 0 0 0 1px rgba(255,255,255,0.1)"
+                                    : "0 4px 20px rgba(0,0,0,0.15)",
                                 transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
-                                "&:hover": {
+                                "&:hover": !c.blocked && {
                                     transform: "scale(1.03)",
                                     boxShadow: "0 8px 28px rgba(103,58,183,0.35)",
                                     background:
                                         "linear-gradient(135deg, rgba(103,58,183,0.3), rgba(103,58,183,0.15))",
                                 },
-                            }}
+                            })}
                         >
-                            <CardActionArea disabled={c.blocked}
+                            <CardActionArea
+                                disabled={c.blocked}
                                 onClick={() => navigate(`/wizard/${c.id}`)}
                                 sx={{
                                     width: "100%",
@@ -111,19 +78,30 @@ export default function NewProjectPage() {
                                     textAlign: "center",
                                 }}
                             >
-                                <Box sx={{ mb: 1, color: "primary.main" }}>{c.icon}</Box>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                <Box
+                                    sx={{
+                                        mb: 1,
+                                        color: c.blocked ? "text.disabled" : "primary.main",
+                                    }}
+                                >
+                                    {c.icon}
+                                </Box>
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{ fontWeight: 600, color: c.blocked ? "text.disabled" : "inherit" }}
+                                >
                                     {c.title}
                                 </Typography>
                                 <Typography
                                     variant="body2"
-                                    color="text.secondary"
+                                    color={c.blocked ? "text.disabled" : "text.secondary"}
                                     sx={{ mt: 1, maxWidth: 220 }}
                                 >
                                     {c.desc}
                                 </Typography>
                             </CardActionArea>
                         </Card>
+
                     </Grid>
                 ))}
             </Grid>

@@ -1,5 +1,5 @@
 import React from "react";
-import WizardPage from "./WizardPage";
+import WizardBase from "./WizardBase";
 import {
     Box,
     Card,
@@ -22,7 +22,7 @@ const renderOptions = (options, key) => (formData, setFormData) => (
             <Card
                 key={typeof opt === "string" ? opt : opt.value}
                 sx={{
-                    borderRadius: 3,
+                    borderRadius: 2,
                     height: 100,
                     display: "flex",
                     alignItems: "center",
@@ -72,15 +72,15 @@ const renderOptions = (options, key) => (formData, setFormData) => (
     </Box>
 );
 
-export default function GenreWizardPage() {
+export default function ThemeWizardPage() {
     const steps = [
         {
-            title: "Choose a Genre",
+            title: "Choose a Theme",
             render: renderOptions(
                 ["Travel", "Vlog", "Music", "Dance", "Education"],
-                "genre"
+                "theme"
             ),
-            validate: (data) => !!data.genre,
+            validate: (data) => !!data.theme,
         },
         {
             title: "Choose a Mood",
@@ -152,12 +152,12 @@ export default function GenreWizardPage() {
     ];
 
     const handleFinish = (data) => {
-        alert("Genre Project:\n" + JSON.stringify(data, null, 2));
+        alert("Theme Project:\n" + JSON.stringify(data, null, 2));
     };
 
     return (
-        <WizardPage
-            title="Create Project from Genre"
+        <WizardBase
+            title="Create Project from Theme"
             description="Answer a few quick questions to let AI prepare scene placeholders."
             steps={steps}
             onFinish={handleFinish}

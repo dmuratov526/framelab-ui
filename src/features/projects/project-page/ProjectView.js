@@ -10,7 +10,7 @@ import {
     Paper,
 } from "@mui/material";
 import { Share } from "@mui/icons-material";
-import ScenesTab from "./tabs/ScenesTab";
+import ScenesTab from "../tabs/ScenesTab";
 
 
 function MusicTab() {
@@ -76,7 +76,7 @@ export default function ProjectView() {
             {/* Табы */}
             <Paper
                 sx={{
-                    borderRadius: 3,
+                    borderRadius: 2,
                     mb: 2,
                     backdropFilter: "blur(16px) saturate(180%)",
                     WebkitBackdropFilter: "blur(16px) saturate(180%)",

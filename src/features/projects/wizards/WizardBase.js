@@ -5,11 +5,15 @@ import {
     Box,
     Button,
     LinearProgress,
+    IconButton,
 } from "@mui/material";
+import {ArrowBack, ArrowBackIos, ArrowForwardIos} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-export default function WizardPage({ title, description, steps, onFinish }) {
+export default function WizardBase({ title, description, steps, onFinish }) {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState({});
+    const navigate = useNavigate();
 
     const stepsTotal = steps.length;
     const progressValue = ((step + 1) / stepsTotal) * 100;
@@ -32,6 +36,16 @@ export default function WizardPage({ title, description, steps, onFinish }) {
 
     return (
         <Container maxWidth="md" sx={{ mt: 2, mb: 4, p: 0 }}>
+            {/* Кнопка назад к категориям */}
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <IconButton onClick={() => navigate(-1)}>
+                    <ArrowBack />
+                </IconButton>
+                <Typography variant="h6" sx={{ fontWeight: 600, ml: 1 }}>
+                    Back
+                </Typography>
+            </Box>
+
             {/* Прогресс-бар */}
             <Box sx={{ mb: 3 }}>
                 <LinearProgress
@@ -56,11 +70,14 @@ export default function WizardPage({ title, description, steps, onFinish }) {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 {description}
             </Typography>
+            <Typography variant="h6" sx={{ fontWeight: 500, mb: 2 }}>
+                {currentStep.title}
+            </Typography>
 
             {/* Контент шага */}
             <Box>{currentStep.render(formData, setFormData)}</Box>
 
-            {/* Кнопки */}
+            {/* Кнопки (шаг назад/вперёд) */}
             <Box
                 sx={{
                     display: "flex",
@@ -69,25 +86,25 @@ export default function WizardPage({ title, description, steps, onFinish }) {
                 }}
             >
                 <Button
-                    variant="outlined"
+                    variant='text'
                     color="secondary"
                     size="large"
-                    sx={{ borderRadius: 3, px: 4, m: 2 }}
+                    sx={{ borderRadius: 2, px: 4, m: 2 }}
                     disabled={step === 0}
                     onClick={handleBack}
                 >
-                    Back
+                    <ArrowBackIos/> Back
                 </Button>
 
                 <Button
                     variant="contained"
                     color="primary"
                     size="large"
-                    sx={{ borderRadius: 3, px: 5, m: 2 }}
+                    sx={{ borderRadius: 2, px: 5, m: 2 }}
                     disabled={currentStep.validate && !currentStep.validate(formData)}
                     onClick={handleNext}
                 >
-                    {step < stepsTotal - 1 ? "Next" : "Finish"}
+                    {step < stepsTotal - 1 ? <>Next<ArrowForwardIos/></> : "Finish"}
                 </Button>
             </Box>
         </Container>

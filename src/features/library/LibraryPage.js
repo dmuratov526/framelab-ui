@@ -61,7 +61,21 @@ export default function LibraryPage() {
             </Typography>
 
             {/* Progress Overview */}
-            <Card sx={{ borderRadius: 3, mb: 4 }}>
+            <Card
+                sx={(theme) => ({
+                    borderRadius: 2,
+                    mb: 2,
+                    background:
+                        theme.palette.mode === "dark"
+                            ? "linear-gradient(135deg, #121212 0%, #1e1e2e 50%, #0f0f17 100%)"
+                            : "linear-gradient(135deg, #f8f9fb 0%, #eef1f7 50%, #ffffff 100%)",
+                    boxShadow:
+                        theme.palette.mode === "dark"
+                            ? "0 6px 20px rgba(0,0,0,0.65)"
+                            : "0 4px 12px rgba(0,0,0,0.12)",
+                    color: theme.palette.mode === "dark" ? "#fff" : "inherit",
+                })}
+            >
                 <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                         Progress Overview
@@ -99,6 +113,7 @@ export default function LibraryPage() {
                 </CardContent>
             </Card>
 
+
             {/* Projects */}
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
                 My Projects
@@ -109,7 +124,7 @@ export default function LibraryPage() {
                     <Grid item xs={12} sm={6} key={p.id} sx={{ px: 0, width: "100%" }}>
                         <Card
                             sx={{
-                                borderRadius: 3,
+                                borderRadius: 2,
                                 overflow: "hidden",
                                 background: `linear-gradient(135deg, ${p.color}, #00000040)`,
                                 color: "white",
@@ -158,18 +173,31 @@ export default function LibraryPage() {
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, mt: 2 }}>
                 Completed Videos
             </Typography>
-            <Card sx={{ borderRadius: 3, mb: 4 }}>
-                <CardContent sx={{ pb: 0 }}>
+            <Card sx={{ borderRadius: 2, mb: 4 }}>
+                <CardContent
+                    sx={(theme) => ({
+                        pb: 0,
+                        background:
+                            theme.palette.mode === "dark"
+                                ? "linear-gradient(180deg, rgba(40,50,70,0.9) 0%, rgba(20,25,35,0.95) 100%)"
+                                : "linear-gradient(180deg, rgba(250,250,255,0.95) 0%, rgba(240,240,250,0.98) 100%)",
+                    })}
+                >
                     {completedVideos.map((v, idx) => (
                         <Box
                             key={v.id}
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                p: 2,
+                                p: 1.5,
                                 borderBottom:
                                     idx !== completedVideos.length - 1
-                                        ? "1px solid rgba(0,0,0,0.5)"
+                                        ? (theme) =>
+                                            `1px solid ${
+                                                theme.palette.mode === "dark"
+                                                    ? "rgba(255,255,255,0.08)"
+                                                    : "rgba(0,0,0,0.1)"
+                                            }`
                                         : "none",
                             }}
                         >
@@ -186,7 +214,11 @@ export default function LibraryPage() {
                                     {v.date} • {v.length}
                                 </Typography>
                             </Box>
-                            <Button size="small" variant="outlined" sx={{ borderRadius: 2 }}>
+                            <Button
+                                size="small"
+                                variant="contained"
+                                sx={{ borderRadius: 2, textTransform: "none" }}
+                            >
                                 Play
                             </Button>
                         </Box>

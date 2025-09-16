@@ -8,7 +8,7 @@ import {
     Avatar, Container,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleTheme, selectTheme } from "../features/settings/settingsSlice";
+import { toggleTheme, selectTheme } from "../../features/settings/settingsSlice";
 import { useNavigate } from "react-router-dom";
 import {DarkMode, LightMode} from "@mui/icons-material";
 import BottomNav from "./BottomNav";
@@ -48,9 +48,11 @@ export default function Layout({ children }) {
                 })}
             >
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        FrameLab
-                    </Typography>
+                    <Box onClick={() => navigate("/")} sx={{ cursor: "pointer" }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            FrameLab
+                        </Typography>
+                    </Box>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         {/* Переключатель темы */}

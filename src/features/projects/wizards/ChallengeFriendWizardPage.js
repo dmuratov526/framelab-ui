@@ -1,5 +1,5 @@
 import React from "react";
-import WizardPage from "./WizardPage";
+import WizardBase from "./WizardBase";
 import {
     Box,
     Card,
@@ -30,7 +30,7 @@ const renderDurations = (options, key) => (formData, setFormData) => (
             <Card
                 key={opt.value}
                 sx={{
-                    borderRadius: 3,
+                    borderRadius: 2,
                     height: 100,
                     display: "flex",
                     alignItems: "center",
@@ -164,7 +164,7 @@ export default function ChallengeFriendWizardPage() {
     };
 
     return (
-        <WizardPage
+        <WizardBase
             title="Challenge a Friend"
             description="Create and send a challenge to your friend."
             steps={steps}
