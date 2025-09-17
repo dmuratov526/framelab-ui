@@ -9,7 +9,7 @@ import "./styles/globals.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <Provider store={store}>
-        <BrowserRouter basename="/framelab-ui">
+        <BrowserRouter>
             <App />
         </BrowserRouter>
     </Provider>

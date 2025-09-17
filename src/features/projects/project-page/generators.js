@@ -21,7 +21,8 @@ export function generateRandomScene(index, type) {
         title: `Scene ${index + 1}`,
         duration: baseDur,
         description,
-        completed: false
+        completed: false,
+        media: null
     };
 }
 

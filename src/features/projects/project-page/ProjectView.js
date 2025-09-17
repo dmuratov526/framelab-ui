@@ -7,7 +7,7 @@ import {
     Tabs,
     Tab,
     Card,
-    CardContent
+    CardContent, Button
 } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 import { projectTabsConfig } from "./projectTabsConfig";
@@ -18,6 +18,7 @@ import {generateRandomScene, generateRandomScenes} from "./generators";
 import MusicTab from "../tabs/MusicTab";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
+import VideoExporter from "../video/videoExporter";
 
 
 
@@ -38,6 +39,14 @@ export default function ProjectView() {
             notes: "",
         })
     );
+
+    const handleSelectMusic = (track) => {
+        setCurrentProject((prev) => ({
+            ...prev,
+            music: track,              // сохраняем сам трек
+            musicSelected: true,       // отмечаем что музыка выбрана
+        }));
+    };
 
     const [progress, setProgress] = useState(0);
 
@@ -134,7 +143,8 @@ export default function ProjectView() {
                 title: `Scene ${i + 1}`,
                 duration: dur,
                 description: `${type} scene`,
-                completed: false
+                completed: false,
+                media: null
             });
         }
 
@@ -160,12 +170,12 @@ export default function ProjectView() {
         }));
     };
 
-    const handleToggleMusic = () => {
-        setCurrentProject(prev => ({
-            ...prev,
-            musicSelected: !prev.musicSelected
-        }));
-    };
+    // const handleToggleMusic = () => {
+    //     setCurrentProject(prev => ({
+    //         ...prev,
+    //         musicSelected: !prev.musicSelected
+    //     }));
+    // };
 
     const navigate = useNavigate();
 
@@ -286,6 +296,7 @@ export default function ProjectView() {
 
                 {currentTabs[tabIndex] === "Scenes" && (
                     <ScenesTab
+                        setCurrentProject={setCurrentProject}
                         scenes={currentProject.scenes}
                         onAddScene={handleAddScene}
                         onDeleteScene={handleDeleteScene}
@@ -298,8 +309,25 @@ export default function ProjectView() {
                     <MusicTab
                         music={currentProject.music}
                         musicSelected={currentProject.musicSelected}
-                        onToggleMusic={handleToggleMusic}
+                        onSelectMusic={handleSelectMusic}
                     />
+                )}
+
+                {currentTabs[tabIndex] === "Preview" && (
+                    <Box>
+                        {/* Кнопка для отладки */}
+                        <Button
+                            onClick={() => console.log(currentProject)}
+                            variant="outlined"
+                            color="secondary"
+                            sx={{ mb: 2 }}
+                        >
+                            Debug: Get project
+                        </Button>
+
+                        {/* Экспортер финального видео */}
+                        <VideoExporter project={currentProject} />
+                    </Box>
                 )}
             </Card>
         </Box>

@@ -81,6 +81,7 @@ const generateScenesFromIdea = (idea) => {
             duration: dur,
             description: `${idea.title} scene`,
             completed: false,
+            media: null
         });
     }
     return scenes;
