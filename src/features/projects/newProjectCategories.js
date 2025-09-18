@@ -14,18 +14,18 @@ export const newProjectCategories = [
         blocked: false
     },
     {
-        id: "theme",
-        title: "Theme",
-        desc: "Pick a theme and mood for your video",
-        icon: <MovieIcon sx={{ fontSize: 36 }} />,
-        blocked: false
-    },
-    {
         id: "challenge-friend",
         title: "Friend Challenge",
         desc: "Send a custom challenge to your friend.",
         icon: <PeopleIcon sx={{ fontSize: 36 }} />,
         blocked: false
+    },
+    {
+        id: "theme",
+        title: "Theme",
+        desc: "Pick a theme and mood for your video",
+        icon: <MovieIcon sx={{ fontSize: 36 }} />,
+        blocked: true
     },
     {
         id: "music",

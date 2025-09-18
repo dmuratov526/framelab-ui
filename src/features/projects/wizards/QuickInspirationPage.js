@@ -9,10 +9,11 @@ import {
     IconButton,
     Chip,
     Divider,
+    useTheme,
 } from "@mui/material";
 import { Refresh, ArrowBack, BookmarkBorder } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import {createProject} from "../project-page/projectFactory";
+import { createProject } from "../project-page/projectFactory";
 
 const ideasList = [
     {
@@ -81,7 +82,7 @@ const generateScenesFromIdea = (idea) => {
             duration: dur,
             description: `${idea.title} scene`,
             completed: false,
-            media: null
+            media: null,
         });
     }
     return scenes;
@@ -89,6 +90,8 @@ const generateScenesFromIdea = (idea) => {
 
 export default function QuickInspirationPage() {
     const navigate = useNavigate();
+    const theme = useTheme();
+
     const [current, setCurrent] = useState(
         Math.floor(Math.random() * ideasList.length)
     );
@@ -134,14 +137,17 @@ export default function QuickInspirationPage() {
                 </IconButton>
             </Box>
 
+            {/* Карточка вдохновения */}
             <Card
                 sx={{
-                    borderRadius: 2,
+                    borderRadius: 3,
                     overflow: "hidden",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
                     background:
-                        "linear-gradient(180deg, rgba(40,50,70,0.9) 0%, rgba(20,25,35,0.95) 100%)",
-                    color: "white",
+                        theme.palette.mode === "dark"
+                            ? "linear-gradient(180deg, rgba(30,35,50,0.95) 0%, rgba(10,15,25,0.98) 100%)"
+                            : "linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%)",
+                    color: theme.palette.mode === "dark" ? "white" : "inherit",
                 }}
             >
                 {/* Preview */}
@@ -166,6 +172,7 @@ export default function QuickInspirationPage() {
                 </Box>
 
                 <CardContent sx={{ p: 3 }}>
+                    {/* Заголовок + иконка */}
                     <Box
                         sx={{
                             display: "flex",
@@ -174,17 +181,31 @@ export default function QuickInspirationPage() {
                             mb: 1,
                         }}
                     >
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: "white" }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 700,
+                                color: theme.palette.mode === "dark" ? "white" : "black",
+                            }}
+                        >
                             {inspiration.title}
                         </Typography>
-                        <IconButton sx={{ color: "white" }}>
+                        <IconButton
+                            sx={{ color: theme.palette.mode === "dark" ? "white" : "black" }}
+                        >
                             <BookmarkBorder />
                         </IconButton>
                     </Box>
 
                     <Typography
                         variant="body2"
-                        sx={{ mb: 2, color: "rgba(255,255,255,0.8)" }}
+                        sx={{
+                            mb: 2,
+                            color:
+                                theme.palette.mode === "dark"
+                                    ? "rgba(255,255,255,0.85)"
+                                    : "text.secondary",
+                        }}
                     >
                         {inspiration.desc}
                     </Typography>
@@ -198,43 +219,93 @@ export default function QuickInspirationPage() {
                                 size="small"
                                 sx={{
                                     borderRadius: "8px",
-                                    background: "rgba(255,255,255,0.2)",
-                                    color: "white",
+                                    background:
+                                        theme.palette.mode === "dark"
+                                            ? "rgba(255,255,255,0.15)"
+                                            : "rgba(0,0,0,0.08)",
+                                    color: theme.palette.mode === "dark" ? "white" : "black",
                                     fontWeight: 500,
                                 }}
                             />
                         ))}
                     </Box>
 
-                    {/* Meta */}
+                    {/* Meta info */}
                     <Box
                         sx={{
                             display: "flex",
                             flexWrap: "wrap",
                             gap: 2,
                             mb: 2,
-                            fontSize: "0.8rem",
+                            fontSize: "0.85rem",
                         }}
                     >
-                        <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.8)" }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color:
+                                    theme.palette.mode === "dark"
+                                        ? "rgba(255,255,255,0.8)"
+                                        : "text.secondary",
+                            }}
+                        >
                             ⏱ {inspiration.duration}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.8)" }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color:
+                                    theme.palette.mode === "dark"
+                                        ? "rgba(255,255,255,0.8)"
+                                        : "text.secondary",
+                            }}
+                        >
                             🎶 {inspiration.music}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.8)" }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color:
+                                    theme.palette.mode === "dark"
+                                        ? "rgba(255,255,255,0.8)"
+                                        : "text.secondary",
+                            }}
+                        >
                             🎬 {inspiration.shots} shots
                         </Typography>
-                        <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.8)" }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color:
+                                    theme.palette.mode === "dark"
+                                        ? "rgba(255,255,255,0.8)"
+                                        : "text.secondary",
+                            }}
+                        >
                             ⭐ {inspiration.difficulty}
                         </Typography>
                     </Box>
 
-                    <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.2)" }} />
+                    <Divider
+                        sx={{
+                            my: 2,
+                            borderColor:
+                                theme.palette.mode === "dark"
+                                    ? "rgba(255,255,255,0.2)"
+                                    : "rgba(0,0,0,0.12)",
+                        }}
+                    />
 
                     <Typography
                         variant="caption"
-                        sx={{ display: "block", mb: 1.5, color: "rgba(255,255,255,0.8)" }}
+                        sx={{
+                            display: "block",
+                            mb: 1.5,
+                            color:
+                                theme.palette.mode === "dark"
+                                    ? "rgba(255,255,255,0.85)"
+                                    : "text.secondary",
+                        }}
                     >
                         💡 {inspiration.tip}
                     </Typography>

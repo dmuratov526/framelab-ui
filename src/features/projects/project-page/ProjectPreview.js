@@ -1,8 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { Button } from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {
+    Box,
+    Typography,
+    Paper,
+    List,
+    ListItem,
+    ListItemText,
+    Divider,
+    Button, CircularProgress,
+} from "@mui/material";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import MovieIcon from "@mui/icons-material/Movie";
+import VideoExporter from "../video/videoExporter";
+import {FFmpeg} from "@ffmpeg/ffmpeg";
 
-export default function VideoExporter({ project, autoStart = false, hideButton = false }) {
+export default function ProjectPreview({ project }) {
+    //export
     const [ffmpeg] = useState(new FFmpeg());
     const [isReady, setIsReady] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
@@ -142,16 +155,87 @@ export default function VideoExporter({ project, autoStart = false, hideButton =
 
 
 
+
+
+    const [showExport, setShowExport] = useState(false);
+
     return (
-        <div>
-            <Button
-                onClick={exportVideo}
-                variant="contained"
-                color="primary"
-                disabled={isExporting}
+        <Box>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                🎬 Project Preview
+            </Typography>
+
+            <Paper
+                elevation={2}
+                sx={{
+                    mb: 3,
+                    p: 2,
+                    borderRadius: 2,
+                    background:
+                        "linear-gradient(135deg, rgba(100,100,255,0.05), rgba(150,150,255,0.08))",
+                }}
             >
-                {isExporting ? "Exporting..." : "Export Video"}
-            </Button>
+                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+                    Scenes Timeline
+                </Typography>
+
+                <List dense>
+                    {project.scenes.map((scene, i) => (
+                        <React.Fragment key={scene.id}>
+                            <ListItem>
+                                <MovieIcon color="action" sx={{ mr: 1 }} />
+                                <ListItemText
+                                    primary={`Scene ${i + 1}: ${scene.title}`}
+                                    secondary={`${scene.duration || 0}s ${
+                                        scene.media ? "• video attached" : "• no media"
+                                    }`}
+                                />
+                            </ListItem>
+                            {i < project.scenes.length - 1 && <Divider />}
+                        </React.Fragment>
+                    ))}
+                </List>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+                    Music
+                </Typography>
+                {project.music?.id ? (
+                    <ListItem>
+                        <MusicNoteIcon color="success" sx={{ mr: 1 }} />
+                        <ListItemText
+                            primary={project.music.name}
+                            secondary={`Artist: ${project.music.artist_name} • Start: ${
+                                project.music.startTime || 0
+                            }s`}
+                        />
+                    </ListItem>
+                ) : (
+                    <Typography variant="body2" color="text.secondary">
+                        No music selected
+                    </Typography>
+                )}
+            </Paper>
+
+            {
+                isExporting ?  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled
+                >
+                    <CircularProgress />
+                </Button> :
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={exportVideo}
+                    >
+                        🚀 Export Final Video
+                    </Button>
+            }
 
             {outputUrl && (
                 <video
@@ -160,6 +244,8 @@ export default function VideoExporter({ project, autoStart = false, hideButton =
                     style={{ width: "100%", marginTop: 20 }}
                 />
             )}
-        </div>
+
+            {}
+        </Box>
     );
 }
