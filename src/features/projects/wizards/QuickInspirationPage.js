@@ -10,82 +10,47 @@ import {
     Chip,
     Divider,
     useTheme,
+    Paper,
 } from "@mui/material";
-import { Refresh, ArrowBack, BookmarkBorder } from "@mui/icons-material";
+import {
+    Refresh,
+    ArrowBack,
+    BookmarkBorder,
+    Whatshot,
+    Assignment,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { createProject } from "../project-page/projectFactory";
+import {ideasList} from "./ideasList";
 
-const ideasList = [
-    {
-        title: "Morning Coffee ☕",
-        desc: "Show your morning vibe in 3 quick shots: making coffee, first sip, and your smile.",
-        music: "Chill Vibes Track",
-        duration: "15s",
-        tags: ["morning", "coffee", "lifestyle"],
-        difficulty: "Easy",
-        shots: 3,
-        tip: "Best filmed in portrait mode near a window with natural light.",
-    },
-    {
-        title: "City Walk 🚶‍♂️",
-        desc: "Film your walk: shoes, the street, and a landmark.",
-        music: "Urban Beat",
-        duration: "20s",
-        tags: ["city", "walk", "travel"],
-        difficulty: "Easy",
-        shots: 3,
-        tip: "Capture moving details: footsteps, flowing traffic, wide street shots.",
-    },
-    {
-        title: "Dance Break 💃",
-        desc: "Try 5 seconds of your favorite dance move.",
-        music: "Trending TikTok Track",
-        duration: "10s",
-        tags: ["dance", "fun", "trend"],
-        difficulty: "Medium",
-        shots: 1,
-        tip: "Place camera on a steady surface — full body in frame works best.",
-    },
-    {
-        title: "Cooking Fun 🍳",
-        desc: "Ingredients, sizzling pan, and the final dish.",
-        music: "Upbeat Acoustic",
-        duration: "30s",
-        tags: ["cooking", "food", "home"],
-        difficulty: "Easy",
-        shots: 3,
-        tip: "Film close-ups of ingredients for texture.",
-    },
-];
 
-// 🔹 Вспомогательная функция для перевода "15s" / "1m"
+
+// 🔹 Парсим длительность
 const parseDuration = (dur) => {
     if (dur.endsWith("s")) return parseInt(dur);
     if (dur.endsWith("m")) return parseInt(dur) * 60;
     return 30;
 };
 
-// 🔹 Генерация сцен строго по идее
+// 🔹 Генерация сцен
 const generateScenesFromIdea = (idea) => {
     const total = parseDuration(idea.duration);
     const baseDur = Math.floor(total / idea.shots);
     let remaining = total;
 
-    const scenes = [];
-    for (let i = 0; i < idea.shots; i++) {
-        let dur = i === idea.shots - 1 ? remaining : baseDur;
+    return Array.from({ length: idea.shots }, (_, i) => {
+        const dur = i === idea.shots - 1 ? remaining : baseDur;
         remaining -= dur;
-
-        scenes.push({
+        return {
             id: `${Date.now()}-${i}`,
-            title: `Shot ${i + 1}`,
+            title: idea.shotsDetails?.[i]?.text || `Shot ${i + 1}`,
             duration: dur,
             description: `${idea.title} scene`,
             completed: false,
             media: null,
-        });
-    }
-    return scenes;
+        };
+    });
 };
 
 export default function QuickInspirationPage() {
@@ -115,6 +80,12 @@ export default function QuickInspirationPage() {
         setCurrent(Math.floor(Math.random() * ideasList.length));
     };
 
+    const today = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+    });
+
     return (
         <Box maxWidth="md" sx={{ mt: 1, mb: 4 }}>
             {/* Header */}
@@ -130,14 +101,14 @@ export default function QuickInspirationPage() {
                     <ArrowBack />
                 </IconButton>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    Quick Inspiration
+                    Challenge of the Day
                 </Typography>
                 <IconButton size="small" onClick={handleRefresh}>
                     <Refresh />
                 </IconButton>
             </Box>
 
-            {/* Карточка вдохновения */}
+            {/* Card */}
             <Card
                 sx={{
                     borderRadius: 3,
@@ -165,14 +136,22 @@ export default function QuickInspirationPage() {
                             bottom: 0,
                             left: 0,
                             right: 0,
-                            height: "50%",
+                            p: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
                             background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
                         }}
-                    />
+                    >
+                        <Whatshot sx={{ color: "orange" }} />
+                        <Typography variant="body2" sx={{ color: "white", fontWeight: 600 }}>
+                            {today}
+                        </Typography>
+                    </Box>
                 </Box>
 
                 <CardContent sx={{ p: 3 }}>
-                    {/* Заголовок + иконка */}
+                    {/* Title + bookmark */}
                     <Box
                         sx={{
                             display: "flex",
@@ -197,20 +176,32 @@ export default function QuickInspirationPage() {
                         </IconButton>
                     </Box>
 
-                    <Typography
-                        variant="body2"
+                    {/* Description */}
+                    <Paper
+                        variant="outlined"
                         sx={{
+                            p: 1.5,
                             mb: 2,
-                            color:
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 1,
+                            borderRadius: 2,
+                            borderStyle: "dashed",
+                            borderColor:
                                 theme.palette.mode === "dark"
-                                    ? "rgba(255,255,255,0.85)"
-                                    : "text.secondary",
+                                    ? "rgba(255,255,255,0.2)"
+                                    : "rgba(0,0,0,0.15)",
+                            bgcolor:
+                                theme.palette.mode === "dark"
+                                    ? "rgba(255,255,255,0.05)"
+                                    : "rgba(0,0,0,0.02)",
                         }}
                     >
-                        {inspiration.desc}
-                    </Typography>
+                        <Assignment fontSize="small" />
+                        <Typography variant="body2">{inspiration.desc}</Typography>
+                    </Paper>
 
-                    {/* Теги */}
+                    {/* Tags */}
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
                         {inspiration.tags.map((tag) => (
                             <Chip
@@ -230,106 +221,100 @@ export default function QuickInspirationPage() {
                         ))}
                     </Box>
 
-                    {/* Meta info */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 2,
-                            mb: 2,
-                            fontSize: "0.85rem",
-                        }}
-                    >
-                        <Typography
-                            variant="caption"
-                            sx={{
-                                color:
-                                    theme.palette.mode === "dark"
-                                        ? "rgba(255,255,255,0.8)"
-                                        : "text.secondary",
-                            }}
-                        >
-                            ⏱ {inspiration.duration}
-                        </Typography>
-                        <Typography
-                            variant="caption"
-                            sx={{
-                                color:
-                                    theme.palette.mode === "dark"
-                                        ? "rgba(255,255,255,0.8)"
-                                        : "text.secondary",
-                            }}
-                        >
-                            🎶 {inspiration.music}
-                        </Typography>
-                        <Typography
-                            variant="caption"
-                            sx={{
-                                color:
-                                    theme.palette.mode === "dark"
-                                        ? "rgba(255,255,255,0.8)"
-                                        : "text.secondary",
-                            }}
-                        >
+                    {/* Meta */}
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
+                        <Typography variant="caption">⏱ {inspiration.duration}</Typography>
+                        <Typography variant="caption">🎶 {inspiration.music}</Typography>
+                        <Typography variant="caption">
                             🎬 {inspiration.shots} shots
                         </Typography>
-                        <Typography
-                            variant="caption"
-                            sx={{
-                                color:
-                                    theme.palette.mode === "dark"
-                                        ? "rgba(255,255,255,0.8)"
-                                        : "text.secondary",
-                            }}
-                        >
-                            ⭐ {inspiration.difficulty}
-                        </Typography>
+                        <Typography variant="caption">⭐ {inspiration.difficulty}</Typography>
                     </Box>
 
-                    <Divider
+                    {/* Shots Preview */}
+                    <Box
                         sx={{
-                            my: 2,
-                            borderColor:
-                                theme.palette.mode === "dark"
-                                    ? "rgba(255,255,255,0.2)"
-                                    : "rgba(0,0,0,0.12)",
-                        }}
-                    />
-
-                    <Typography
-                        variant="caption"
-                        sx={{
-                            display: "block",
-                            mb: 1.5,
-                            color:
-                                theme.palette.mode === "dark"
-                                    ? "rgba(255,255,255,0.85)"
-                                    : "text.secondary",
+                            display: "grid",
+                            gridTemplateColumns: `repeat(${inspiration.shots}, 1fr)`,
+                            gap: 1.2,
+                            mb: 2,
                         }}
                     >
+                        {inspiration.shotsDetails?.map((shot, i) => {
+                            const dur = Math.floor(parseDuration(inspiration.duration) / inspiration.shots);
+                            return (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.15, duration: 0.4 }}
+                                >
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            p: 1,
+                                            height: 90,
+                                            borderRadius: 2,
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            bgcolor:
+                                                theme.palette.mode === "dark"
+                                                    ? "rgba(255,255,255,0.08)"
+                                                    : "rgba(0,0,0,0.04)",
+                                        }}
+                                    >
+                                        <Typography sx={{ fontSize: "1.4rem" }}>{shot.emoji}</Typography>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{ mt: 0.5, textAlign: "center", fontWeight: 500 }}
+                                        >
+                                            {shot.text}
+                                        </Typography>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            sx={{ fontSize: "0.7rem", mt: 0.3 }}
+                                        >
+                                            ⏱ {dur}s
+                                        </Typography>
+                                    </Paper>
+                                </motion.div>
+                            );
+                        })}
+                    </Box>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography variant="caption" sx={{ display: "block", mb: 1.5 }}>
                         💡 {inspiration.tip}
                     </Typography>
 
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                            borderRadius: 2,
-                            py: 1.4,
-                            fontWeight: 600,
-                            textTransform: "none",
-                            fontSize: "1rem",
-                            background: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
-                            color: "white",
-                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
-                            "&:hover": {
-                                background: "linear-gradient(135deg, #7b1fff 0%, #3d8bff 100%)",
-                            },
-                        }}
-                        onClick={handleRecord}
+                    {/* Button */}
+                    <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.96 }}
+                        animate={{ y: [0, -3, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
                     >
-                        🎥 Try This
-                    </Button>
+                        <Button
+                            variant="contained"
+                            fullWidth
+                            sx={{
+                                borderRadius: 2,
+                                py: 1.4,
+                                fontWeight: 600,
+                                textTransform: "none",
+                                fontSize: "1rem",
+                                background: "linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)",
+                                color: "white",
+                            }}
+                            onClick={handleRecord}
+                        >
+                            🎥 Start Challenge
+                        </Button>
+                    </motion.div>
                 </CardContent>
             </Card>
         </Box>

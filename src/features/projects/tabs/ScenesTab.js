@@ -1,41 +1,61 @@
 import React, { useCallback } from "react";
 import {
     Box,
-    Button,
-    Grid,
     Paper,
     Typography,
     IconButton,
-    useTheme,
+    Button,
+    useTheme, Chip,
 } from "@mui/material";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/pagination";
+
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+
+
+// 🎨 палитры для карточек
+const darkCardBackgrounds = [
+    "linear-gradient(135deg, #1a1a1a, #2a2a2a)",
+    "linear-gradient(135deg, #0f0f0f, #1e1e1e)",
+    "linear-gradient(135deg, #1c1c24, #2d2d3a)",
+    "linear-gradient(135deg, #1b1525, #241b36)",
+];
+
+const lightCardBackgrounds = [
+    "linear-gradient(135deg, #ffffff, #f3f3f3)",
+    "linear-gradient(135deg, #fdfbfb, #ebedee)",
+    "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+    "linear-gradient(135deg, #e0eafc, #cfdef3)",
+];
 
 export default function ScenesTab({
                                       setCurrentProject,
                                       scenes,
                                       onAddScene,
                                       onDeleteScene,
-                                      onRegenerateScenes,
-                                      onToggleComplete,
-                                      onOpenScene,
+                                      onToggleComplete
                                   }) {
     const theme = useTheme();
 
-    const handleAttachMedia = useCallback((sceneId, file) => {
-        const url = URL.createObjectURL(file);
-        setCurrentProject((prev) => ({
-            ...prev,
-            scenes: prev.scenes.map((s) =>
-                s.id === sceneId ? { ...s, media: url } : s
-            ),
-        }));
-    }, [setCurrentProject]);
+    const handleAttachMedia = useCallback(
+        (sceneId, file) => {
+            const url = URL.createObjectURL(file);
+            setCurrentProject((prev) => ({
+                ...prev,
+                scenes: prev.scenes.map((s) =>
+                    s.id === sceneId ? { ...s, media: url } : s
+                ),
+            }));
+        },
+        [setCurrentProject]
+    );
 
     const handleDrop = (sceneId, e) => {
         e.preventDefault();
@@ -45,53 +65,101 @@ export default function ScenesTab({
         }
     };
 
+    const getCardBackground = (index) => {
+        const pool =
+            theme.palette.mode === "dark" ? darkCardBackgrounds : lightCardBackgrounds;
+        return pool[index % pool.length];
+    };
+
     return (
-        <Box>
-            {/* Кнопки управления */}
-            <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={onAddScene}>
-                    Add Scene
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="info"
-                    startIcon={<RefreshIcon />}
-                    onClick={onRegenerateScenes}
-                >
-                    Regenerate
+        <>
+            <Box>
+                <Button startIcon={<AddIcon/>} variant={'contained'} color={'success'} sx={{ mt: 1, mb: 2 }} onClick={onAddScene}>
+                    <Typography fontWeight={'bold'}>Add Scene</Typography>
                 </Button>
             </Box>
-
-            {/* Список сцен */}
-            <Grid container spacing={2}>
-                {scenes?.map((scene) => (
-                    <Grid item size={{ xs: 12, md: 4 }} key={scene.id}>
+            <Swiper
+                modules={[Pagination]}
+                spaceBetween={12}
+                slidesPerView={1}
+                style={{ paddingBottom: "60px" }}
+                pagination={{
+                    clickable: true,
+                    renderBullet: (index, className) => {
+                        return `
+        <span class="${className}" 
+              style="
+                width: 32px;
+                height: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.3);
+                color: white;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 6px;
+                cursor: pointer;
+              ">
+          ${index + 1}
+        </span>`;
+                    },
+                }}
+                sx={{
+                    "& .swiper-pagination": {
+                        position: "relative",
+                        marginTop: "16px",
+                        textAlign: "center",
+                    },
+                    "& .swiper-pagination-bullet-active": {
+                        background: "white !important",
+                        color: "black !important", // активная цифра — чёрная на белом круге
+                    },
+                }}
+            >
+                {scenes?.map((scene, idx) => (
+                    <SwiperSlide key={scene.id}>
                         <Paper
-                            elevation={2}
+                            elevation={4}
                             sx={{
                                 p: 2,
-                                borderRadius: 2,
-                                position: "relative",
-                                background:
-                                    theme.palette.mode === "dark"
-                                        ? "linear-gradient(135deg, #1b1b1d, #121214)"
-                                        : "linear-gradient(135deg, #ffffff, #f7f9fc)",
+                                borderRadius: 3,
+                                background: getCardBackground(idx),
                                 border: "1px solid",
                                 borderColor: theme.palette.divider,
                                 display: "flex",
                                 flexDirection: "column",
-                                gap: 2,
+                                gap: 1,
+                                position: "relative",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
                             }}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => handleDrop(scene.id, e)}
                         >
-                            {/* Заголовок */}
-                            <Box>
-                                <Box display="flex" alignItems="center" justifyContent="space-between">
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                        {scene.title}
-                                    </Typography>
-                                    {/* Кнопка удалить */}
+                            <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                    {scene.title}
+                                </Typography>
+                                <Box>
+                                    <Chip color={ scene.completed ? 'success' : 'info' } label={scene.completed ? 'Ready' : 'In progress'} size="small"/>
+                                    <IconButton
+                                        component={'label'}
+                                        size="small"
+                                    >
+                                        <UploadFileIcon fontSize="small" />
+                                        <input
+                                            type="file"
+                                            accept="video/*"
+                                            hidden
+                                            onChange={(e) => {
+                                                if (e.target.files?.[0]) {
+                                                    handleAttachMedia(scene.id, e.target.files[0]);
+                                                }
+                                            }}
+                                        />
+                                    </IconButton>
+                                    {/* Минусик */}
                                     <IconButton
                                         color="error"
                                         size="small"
@@ -100,102 +168,65 @@ export default function ScenesTab({
                                         <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 </Box>
-                                <Typography variant="caption" color="text.secondary">
-                                    {scene.duration}s • {scene.description}
-                                </Typography>
                             </Box>
+                            <Typography variant="caption" color="text.secondary">
+                                {scene.duration}s • {scene.description} {idx + 1}
+                            </Typography>
 
-                            {/* Видео / Drop-зона */}
-                            <Box>
-                                {scene.media ? (
-                                    <video
-                                        src={scene.media}
-                                        controls
-                                        style={{
-                                            width: "100%",
-                                            borderRadius: 8,
-                                            marginBottom: 8,
-                                            border: "1px solid rgba(255,255,255,0.1)",
-                                        }}
-                                    />
-                                ) : (
-                                    <Box
-                                        sx={{
-                                            height: 150,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            border: "2px dashed",
-                                            borderColor: "divider",
-                                            borderRadius: 2,
-                                            mb: 2,
-                                            color: "text.secondary",
-                                            fontStyle: "italic",
-                                        }}
-                                    >
-                                        Drag & Drop video here
-                                    </Box>
-                                )}
-
-                                {/* Кнопка загрузки */}
-                                <Button
-                                    component="label"
-                                    variant="outlined"
-                                    fullWidth
-                                    startIcon={<UploadFileIcon />}
+                            {/* Видео или Drop-зона */}
+                            {scene.media ? (
+                                <video
+                                    src={scene.media}
+                                    controls
+                                    style={{
+                                        width: "100%",
+                                        borderRadius: 8,
+                                    }}
+                                />
+                            ) : (
+                                <Box
                                     sx={{
-                                        py: 1.2,
-                                        mt: 1,
-                                        borderStyle: "dashed",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        border: "2px dashed",
+                                        borderColor: "divider",
+                                        borderRadius: 2,
+                                        pt: 2 , pb: 2,
+                                        color: "text.secondary",
+                                        fontStyle: "italic",
+                                        background:
+                                            theme.palette.mode === "dark"
+                                                ? "rgba(255,255,255,0.05)"
+                                                : "rgba(0,0,0,0.03)",
                                     }}
                                 >
-                                    Upload Video
-                                    <input
-                                        type="file"
-                                        accept="video/*"
-                                        hidden
-                                        onChange={(e) => {
-                                            if (e.target.files?.[0]) {
-                                                handleAttachMedia(scene.id, e.target.files[0]);
-                                            }
-                                        }}
-                                    />
-                                </Button>
-                            </Box>
+                                    Drag & Drop video here
+                                </Box>
+                            )}
 
-                            {/* Статус + кнопка открыть */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
+                            {/* Кнопки состояния */}
+                            <Button
+                                sx={{ mb: 1 }}
+                                variant={scene.completed ? "contained" : "outlined"}
+                                color="success"
+                                size="small"
+                                startIcon={
+                                    scene.completed ? (
+                                        <CheckCircleIcon />
+                                    ) : (
+                                        <HourglassEmptyIcon />
+                                    )
+                                }
+                                onClick={() => onToggleComplete(scene.id)}
                             >
-                                <Button
-                                    sx={{ mb: 1 }}
-                                    variant={scene.completed ? "contained" : "outlined"}
-                                    color="success"
-                                    size="small"
-                                    startIcon={
-                                        scene.completed ? <CheckCircleIcon /> : <HourglassEmptyIcon />
-                                    }
-                                    onClick={() => onToggleComplete(scene.id)}
-                                >
-                                    {scene.completed ? "Ready" : "Mark as Ready"}
-                                </Button>
-
-                                <Button
-                                    variant="contained"
-                                    size="small"
-                                    endIcon={<ArrowForwardIosIcon />}
-                                    onClick={() => onOpenScene?.(scene.id)}
-                                >
-                                    Open Scene
-                                </Button>
-                            </Box>
+                                {scene.completed ? "Ready" : "Mark as Ready"}
+                            </Button>
                         </Paper>
-                    </Grid>
+                    </SwiperSlide>
                 ))}
-            </Grid>
-        </Box>
+            </Swiper>
+        </>
     );
 }
+

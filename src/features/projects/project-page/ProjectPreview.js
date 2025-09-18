@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import MovieIcon from "@mui/icons-material/Movie";
-import VideoExporter from "../video/videoExporter";
 import {FFmpeg} from "@ffmpeg/ffmpeg";
 
 export default function ProjectPreview({ project }) {
@@ -153,11 +152,6 @@ export default function ProjectPreview({ project }) {
         }
     };
 
-
-
-
-
-    const [showExport, setShowExport] = useState(false);
 
     return (
         <Box>

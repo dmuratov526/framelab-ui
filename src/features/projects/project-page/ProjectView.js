@@ -19,7 +19,6 @@ import { generateRandomScene, generateRandomScenes } from "./generators";
 import MusicTab from "../tabs/MusicTab";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
-import VideoExporter from "../video/videoExporter";
 import ProjectPreview from "./ProjectPreview";
 
 export default function ProjectView() {
@@ -140,21 +139,21 @@ export default function ProjectView() {
     const navigate = useNavigate();
 
     return (
-        <Box maxWidth="md" sx={{ mt: 1, mb: 4 }}>
+        <Box maxWidth="md" sx={{ mt: 2, mb: 1 }}>
             {/* Заголовок */}
             <Box
                 sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    mb: 2,
+                    mb: 1,
                 }}
             >
                 <Box display={"flex"} alignItems={"center"}>
                     <IconButton size="small" onClick={() => navigate(-1)}>
                         <ArrowBack />
                     </IconButton>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, fontSize: 20 }}>
                         {currentProject.title}
                     </Typography>
                 </Box>
@@ -169,7 +168,8 @@ export default function ProjectView() {
             <Card
                 sx={(theme) => ({
                     borderRadius: 2,
-                    mb: 3,
+                    mb: 2,
+                    padding: 0,
                     background:
                         theme.palette.mode === "dark"
                             ? "linear-gradient(135deg, #121212 0%, #1e1e2e 50%, #0f0f17 100%)"
@@ -184,30 +184,30 @@ export default function ProjectView() {
                     <LinearProgress
                         variant="determinate"
                         value={progress}
-                        sx={{ height: 8, borderRadius: 5, mb: 2 }}
+                        sx={{ height: 8, borderRadius: 5, mb: 1 }}
                         color="primary"
                     />
                     <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ display: "block", mb: 2 }}
+                        sx={{ display: "block", mb: 1 }}
                     >
                         {progress}% complete
                     </Typography>
 
                     {/* Детали в виде сетки */}
-                    <Grid container spacing={2}>
-                        <Grid item size={4} height="100%">
+                    <Grid container spacing={1}>
+                        <Grid item size={4}>
                             <Paper
                                 variant="outlined"
                                 sx={{
-                                    p: 1.5,
+                                    p: 1,
                                     borderRadius: 1,
                                     textAlign: "center",
                                     bgcolor: "background.default",
                                 }}
                             >
-                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                <Typography variant="h5" sx={{ fontWeight: 700, size: 20 }}>
                                     {currentProject.scenes.filter((s) => s.completed).length}/
                                     {currentProject.scenes.length}
                                 </Typography>
@@ -221,17 +221,18 @@ export default function ProjectView() {
                             <Paper
                                 variant="outlined"
                                 sx={{
-                                    p: 1.5,
+                                    p: 1,
                                     borderRadius: 1,
                                     textAlign: "center",
                                     bgcolor: "background.default",
                                 }}
                             >
                                 <Typography
-                                    variant="h6"
+                                    variant="h5"
                                     sx={{
                                         fontWeight: 700,
                                         color: currentProject.music?.id ? "success.main" : "error.main",
+                                        size: 20
                                     }}
                                 >
                                     {currentProject.music?.id ? "✓" : "✗"}
@@ -248,13 +249,13 @@ export default function ProjectView() {
                             <Paper
                                 variant="outlined"
                                 sx={{
-                                    p: 1.5,
+                                    p: 1,
                                     borderRadius: 1,
                                     textAlign: "center",
                                     bgcolor: "background.default",
                                 }}
                             >
-                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                <Typography variant="h5" sx={{ fontWeight: 700, size: 20 }}>
                                     {currentProject.scenes.reduce(
                                         (sum, s) => sum + (s.duration || 0),
                                         0
@@ -294,19 +295,9 @@ export default function ProjectView() {
                 ))}
             </Tabs>
 
-            {/* Контент вкладки */}
-            <Card
-                sx={(theme) => ({
-                    borderRadius: 2,
-                    p: 2,
-                    minHeight: 220,
-                    background:
-                        theme.palette.mode === "dark"
-                            ? "linear-gradient(135deg, #1a1a1a, #222 50%, #111)"
-                            : "linear-gradient(135deg, #fafbff, #f0f3fa 50%, #ffffff)",
-                })}
-            >
-                {currentTabs[tabIndex] === "Scenes" && (
+
+            {
+                currentTabs[tabIndex] === "Scenes" ?
                     <ScenesTab
                         setCurrentProject={setCurrentProject}
                         scenes={currentProject.scenes}
@@ -315,29 +306,41 @@ export default function ProjectView() {
                         onRegenerateScenes={handleRegenerateOnlyScenes}
                         onToggleComplete={handleToggleSceneComplete}
                     />
-                )}
+                    :
+                    <Card
+                        sx={(theme) => ({
+                            borderRadius: 2,
+                            p: 2,
+                            minHeight: 220,
+                            background:
+                                theme.palette.mode === "dark"
+                                    ? "linear-gradient(135deg, #1a1a1a, #222 50%, #111)"
+                                    : "linear-gradient(135deg, #fafbff, #f0f3fa 50%, #ffffff)",
+                        })}
+                    >
+                        {currentTabs[tabIndex] === "Music" && (
+                            <MusicTab
+                                music={currentProject.music}
+                                onSelectMusic={handleSelectMusic}
+                            />
+                        )}
+                        {currentTabs[tabIndex] === "Preview" && (
+                            <Box>
+                                <Button
+                                    onClick={() => console.log(currentProject)}
+                                    variant="outlined"
+                                    color="secondary"
+                                    sx={{ mb: 2 }}
+                                >
+                                    Debug: Get project
+                                </Button>
+                                <ProjectPreview project={currentProject} />
+                            </Box>
+                        )}
+                    </Card>
+            }
 
-                {currentTabs[tabIndex] === "Music" && (
-                    <MusicTab
-                        music={currentProject.music}
-                        onSelectMusic={handleSelectMusic}
-                    />
-                )}
 
-                {currentTabs[tabIndex] === "Preview" && (
-                    <Box>
-                        <Button
-                            onClick={() => console.log(currentProject)}
-                            variant="outlined"
-                            color="secondary"
-                            sx={{ mb: 2 }}
-                        >
-                            Debug: Get project
-                        </Button>
-                        <ProjectPreview project={currentProject} />
-                    </Box>
-                )}
-            </Card>
         </Box>
     );
 }

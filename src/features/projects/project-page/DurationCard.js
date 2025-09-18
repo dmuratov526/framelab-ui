@@ -22,9 +22,9 @@ export default function DurationCard({ type, duration, onRegenerate }) {
     };
 
     return (
-        <Card sx={{ borderRadius: 2, mb: 3, textAlign: "center", py: 1, px: 1, background: "linear-gradient(135deg, rgba(103,58,183,0.1), rgba(33,150,243,0.08))", }}>
+        <Card sx={{ borderRadius: 2, mb: 2, textAlign: "center", py: 0, px: 1, background: "linear-gradient(135deg, rgba(103,58,183,0.1), rgba(33,150,243,0.08))", }}>
 
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                 🎬 Total Duration
             </Typography>
 
@@ -35,8 +35,9 @@ export default function DurationCard({ type, duration, onRegenerate }) {
                 transition={{ duration: 0.3 }}
             >
                 <Typography
-                    variant="h4"
+                    variant="h5"
                     sx={{
+                        size: 24,
                         fontWeight: 700,
                         mb: 1,
                         background: "linear-gradient(90deg,#673ab7,#2196f3)",
