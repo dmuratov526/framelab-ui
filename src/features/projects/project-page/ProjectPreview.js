@@ -43,7 +43,7 @@ export default function ProjectPreview({ project }) {
             setIsExporting(true);
             console.log("Project:", project);
 
-            // 🔹 Загружаем и обрезаем сцены
+            // 🔹 Загружаем и обрезаем сцены (без перекодирования)
             for (let i = 0; i < project.scenes.length; i++) {
                 const scene = project.scenes[i];
                 if (!scene.media) continue;
@@ -52,21 +52,19 @@ export default function ProjectPreview({ project }) {
                 const buf = await res.arrayBuffer();
                 await ffmpeg.writeFile(`orig${i}.mp4`, new Uint8Array(buf));
 
+                // только обрезка, без scale/fps/кодеков
                 const args = [
                     "-y",
                     ...(scene.startTime ? ["-ss", String(scene.startTime)] : []),
                     "-i", `orig${i}.mp4`,
                     ...(scene.duration ? ["-t", String(scene.duration)] : []),
-                    "-vf", "scale=1280:720,fps=30",
-                    "-c:v", "libx264",
-                    "-preset", "ultrafast",
-                    "-c:a", "aac",
+                    "-c", "copy",
                     `scene${i}.mp4`,
                 ];
                 await ffmpeg.exec(args);
             }
 
-            // 🔹 Считаем общую длительность проекта
+            // 🔹 Считаем общую длительность
             const totalDuration = project.scenes.reduce(
                 (sum, s) => sum + (s.duration || 0),
                 0
@@ -79,12 +77,13 @@ export default function ProjectPreview({ project }) {
             });
             await ffmpeg.writeFile("concat.txt", concatList);
 
-            // 🔹 Склейка сцен
+            // 🔹 Склейка сцен + приведение к общему формату
             await ffmpeg.exec([
                 "-y",
                 "-f", "concat",
                 "-safe", "0",
                 "-i", "concat.txt",
+                "-vf", "scale=1280:720,fps=30",
                 "-c:v", "libx264",
                 "-preset", "ultrafast",
                 "-c:a", "aac",

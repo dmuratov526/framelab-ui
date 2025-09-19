@@ -19,6 +19,7 @@ import ThemeWizardPage from "../features/projects/wizards/ThemeWizardPage";
 import ChallengeFriendWizardPage from "../features/projects/wizards/ChallengeFriendWizardPage";
 import ProjectView from "../features/projects/project-page/ProjectView";
 import QuickInspirationPage from "../features/projects/wizards/QuickInspirationPage";
+import RegisterPage from "../features/auth/RegisterPage";
 
 export default function App() {
     const themeMode = useSelector(selectTheme);
@@ -34,6 +35,7 @@ export default function App() {
                     <Route path="/library" element={<LibraryPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
                     <Route path="/projects/new" element={<NewProjectPage />} />
                     <Route path="/projects/new/theme" element={<ThemeWizardPage />} />
                     {/* Wizards */}

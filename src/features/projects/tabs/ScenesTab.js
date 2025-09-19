@@ -124,7 +124,7 @@ export default function ScenesTab({
                             elevation={4}
                             sx={{
                                 p: 2,
-                                borderRadius: 3,
+                                borderRadius: 2,
                                 background: getCardBackground(idx),
                                 border: "1px solid",
                                 borderColor: theme.palette.divider,
